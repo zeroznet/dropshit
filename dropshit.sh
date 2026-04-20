@@ -68,7 +68,8 @@ generate_nft_script() {
 
     printf '  set blocklist4 {\n'
     printf '    type ipv4_addr\n'
-    printf '    flags interval, auto-merge\n'
+    printf '    flags interval\n'
+    printf '    auto-merge\n'
     if [ -s "$ipv4_file" ]; then
       printf '    elements = {\n'
       awk '{ printf "      %s,\n", $0 }' "$ipv4_file"
@@ -78,7 +79,8 @@ generate_nft_script() {
 
     printf '  set blocklist6 {\n'
     printf '    type ipv6_addr\n'
-    printf '    flags interval, auto-merge\n'
+    printf '    flags interval\n'
+    printf '    auto-merge\n'
     if [ -s "$ipv6_file" ]; then
       printf '    elements = {\n'
       awk '{ printf "      %s,\n", $0 }' "$ipv6_file"
