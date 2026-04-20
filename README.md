@@ -20,21 +20,21 @@ Downloads threat intelligence blocklists and loads them into the firewall drop t
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/zeroznet/dropshit/main/dropshit.sh \
-  -o /usr/local/sbin/dropshit.sh && chmod +x /usr/local/sbin/dropshit.sh
+  -o /usr/local/sbin/dropshit && chmod +x /usr/local/sbin/dropshit
 ```
 
 FreeBSD without `curl`:
 
 ```sh
-fetch -q -o /usr/local/sbin/dropshit.sh \
+fetch -q -o /usr/local/sbin/dropshit \
   https://raw.githubusercontent.com/zeroznet/dropshit/main/dropshit.sh
-chmod +x /usr/local/sbin/dropshit.sh
+chmod +x /usr/local/sbin/dropshit
 ```
 
 ## Cron setup
 
 ```
-@hourly root /usr/local/sbin/dropshit.sh >/dev/null
+@hourly root /usr/local/sbin/dropshit >/dev/null
 ```
 
 ## FreeBSD prerequisite
@@ -52,3 +52,7 @@ The script only updates the table data — PF rules stay in `pf.conf`.
 
 Set `MANUAL_LIST` in the script (or as an env var) to include custom entries.
 Default path: `~/work/dropshit.txt`. Silently skipped if the file does not exist.
+
+## License
+
+Licensed under the BSD-2-Clause license. See LICENSE.
