@@ -26,7 +26,7 @@ need_cmd() { has_cmd "$1" || die "Missing required command: $1"; }
 
 usage() {
   cat <<EOF
-Usage: dropshit.sh [--help]
+Usage: dropshit.sh [-h|--help]
 
 Downloads threat intelligence blocklists and loads them into the firewall.
 
@@ -101,7 +101,11 @@ cleanup() {
 }
 
 main() {
-  [ "${1:-}" = "--help" ] && usage
+  case "${1:-}" in
+    -h|--help) usage ;;
+    "") ;;
+    *) die "Unknown argument: $1" ;;
+  esac
 
   OS=$(uname -s)
   case "$OS" in
