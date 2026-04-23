@@ -5,6 +5,8 @@ set -eu
 set -o pipefail
 
 MANUAL_LIST="${HOME}/work/dropshit.txt"
+EXT_IFACE4="ens3"
+EXT_IFACE6="ens5"
 
 DROP6_URL="https://www.spamhaus.org/drop/dropv6.txt"
 L1_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset"
@@ -90,8 +92,8 @@ generate_nft_script() {
 
     printf '  chain input {\n'
     printf '    type filter hook input priority -100; policy accept;\n'
-    printf '    ip saddr @blocklist4 drop\n'
-    printf '    ip6 saddr @blocklist6 drop\n'
+    printf '    iifname "%s" ip saddr @blocklist4 drop\n' "$EXT_IFACE4"
+    printf '    iifname "%s" ip6 saddr @blocklist6 drop\n' "$EXT_IFACE6"
     printf '  }\n'
 
     printf '}\n'
