@@ -152,7 +152,7 @@ main() {
     FreeBSD)
       need_cmd pfctl
       mv "$TMPDIR/clean.txt" /var/db/dropshit.txt || die "Failed to write /var/db/dropshit.txt"
-      pfctl -t dropshit -T replace -f /var/db/dropshit.txt || die "Failed to update pf table"
+      pfctl -q -t dropshit -T replace -f /var/db/dropshit.txt || die "Failed to update pf table"
       ;;
   esac
 
