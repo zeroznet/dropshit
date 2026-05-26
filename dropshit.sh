@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# scripted/written by Robert Bopko (github.com/zeroznet) with Boba Bott (Claude Sonnet 4.6)
+# scripted/written by Robert Bopko (github.com/zeroznet) with Boba Bott (Claude Opus 4.7)
 
 set -eu
 set -o pipefail
@@ -16,7 +16,6 @@ WC_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/fireho
 WS_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_webserver.netset"
 TOR_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/tor_exits.ipset"
 DM_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/dm_tor.ipset"
-BDS_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/bds_atif.ipset"
 CC_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/cybercrime.ipset"
 A1D_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_abusers_1d.netset"
 
@@ -130,7 +129,6 @@ main() {
   download "$WS_URL"    "$TMPDIR/ws.txt";   sleep 1
   download "$TOR_URL"   "$TMPDIR/tor.txt";  sleep 1
   download "$DM_URL"    "$TMPDIR/dm.txt";   sleep 1
-  download "$BDS_URL"   "$TMPDIR/bds.txt";  sleep 1
   download "$CC_URL"    "$TMPDIR/cc.txt";   sleep 1
   download "$A1D_URL"   "$TMPDIR/a1d.txt"
 
