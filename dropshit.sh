@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# scripted/written by Robert Bopko (github.com/zeroznet) with Boba Bott (Claude Opus 4.7)
+# scripted/written by Robert Bopko (github.com/zeroznet) with Boba Bott (Claude Fable 5.1)
 
 set -eu
 set -o pipefail
@@ -12,7 +12,6 @@ DROP6_URL="https://www.spamhaus.org/drop/dropv6.txt"
 L1_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset"
 L2_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level2.netset"
 L3_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level3.netset"
-WC_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_webclient.netset"
 WS_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_webserver.netset"
 TOR_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/tor_exits.ipset"
 DM_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/dm_tor.ipset"
@@ -125,7 +124,6 @@ main() {
   download "$L1_URL"    "$TMPDIR/l1.txt";   sleep 1
   download "$L2_URL"    "$TMPDIR/l2.txt";   sleep 1
   download "$L3_URL"    "$TMPDIR/l3.txt";   sleep 1
-  download "$WC_URL"    "$TMPDIR/wc.txt";   sleep 1
   download "$WS_URL"    "$TMPDIR/ws.txt";   sleep 1
   download "$TOR_URL"   "$TMPDIR/tor.txt";  sleep 1
   download "$DM_URL"    "$TMPDIR/dm.txt";   sleep 1
