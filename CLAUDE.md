@@ -8,12 +8,7 @@
 
 ## Targets
 
-| System | Firewall | What the script owns |
-|---|---|---|
-| Linux (Debian 13+) | nftables | the whole `table inet dropshit` (sets and input drop chain) |
-| FreeBSD | PF | only the data of the `<dropshit>` table; the rules stay in `pf.conf` |
-
-Branch on `uname -s`. Never touch firewall state outside what the table above lists.
+Systems and mechanisms: README "Supported systems". Branch on `uname -s`. Touch only `table inet dropshit` on Linux and the data of PF's `<dropshit>` table on FreeBSD; never other firewall state.
 
 ## Conventions
 
