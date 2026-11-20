@@ -59,8 +59,36 @@ download() {
   fi || die "Failed to download $url"
 }
 
-clean_blocklist() {
-  awk '{ sub(/[;#].*/, ""); gsub(/[[:space:]]/, ""); if (length > 0) print }' "$1" | sort -u
+# One bad entry would make nft reject the whole ruleset, so invalid lines are
+# skipped with a warning (cron mails it) and the rest still loads.
+split_blocklist() {
+  awk -v v4out="$2" -v v6out="$3" '
+    function prefix_ok(p, max) { return p ~ /^[0-9]+$/ && length(p) <= 3 && p + 0 <= max }
+    function is_v4(s,   p, n, a, i) {
+      n = split(s, p, "/")
+      if (n > 2 || (n == 2 && !prefix_ok(p[2], 32))) return 0
+      if (split(p[1], a, ".") != 4) return 0
+      for (i = 1; i <= 4; i++)
+        if (a[i] !~ /^[0-9]+$/ || length(a[i]) > 3 || a[i] + 0 > 255) return 0
+      return 1
+    }
+    function is_v6(s,   p, n) {
+      n = split(s, p, "/")
+      if (n > 2 || (n == 2 && !prefix_ok(p[2], 128))) return 0
+      return p[1] ~ /^[0-9A-Fa-f:.]+$/ && p[1] ~ /:.*:/
+    }
+    {
+      sub(/[;#].*/, "")
+      gsub(/[[:space:]]/, "")
+      if ($0 == "") next
+      if (index($0, ":") ? is_v6($0) : is_v4($0))
+        print > (index($0, ":") ? v6out : v4out)
+      else
+        printf "WARN: skipping invalid entry: %s\n", $0 | "cat 1>&2"
+    }
+  ' "$1"
+  sort -u -o "$2" "$2"
+  sort -u -o "$3" "$3"
 }
 
 generate_nft_script() {
@@ -139,18 +167,19 @@ main() {
     cat "$MANUAL_LIST" >> "$TMPDIR/combined.txt"
   fi
 
-  clean_blocklist "$TMPDIR/combined.txt" > "$TMPDIR/clean.txt"
+  : > "$TMPDIR/ipv4.txt"
+  : > "$TMPDIR/ipv6.txt"
+  split_blocklist "$TMPDIR/combined.txt" "$TMPDIR/ipv4.txt" "$TMPDIR/ipv6.txt"
 
   case "$OS" in
     Linux)
       need_cmd nft
-      grep '\.' "$TMPDIR/clean.txt" > "$TMPDIR/ipv4.txt" 2>/dev/null || true
-      grep ':'  "$TMPDIR/clean.txt" > "$TMPDIR/ipv6.txt" 2>/dev/null || true
       generate_nft_script "$TMPDIR/ipv4.txt" "$TMPDIR/ipv6.txt" "$TMPDIR/dropshit.nft"
       nft -f "$TMPDIR/dropshit.nft" || die "Failed to load nftables rules"
       ;;
     FreeBSD)
       need_cmd pfctl
+      cat "$TMPDIR/ipv4.txt" "$TMPDIR/ipv6.txt" > "$TMPDIR/clean.txt"
       mv "$TMPDIR/clean.txt" /var/db/dropshit.txt || die "Failed to write /var/db/dropshit.txt"
       pfctl -q -t dropshit -T replace -f /var/db/dropshit.txt || die "Failed to update pf table"
       ;;
