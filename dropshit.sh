@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
-# scripted/written by Robert Bopko (github.com/zeroznet) with Boba Bott (Claude Fable 5.1)
+# scripted/written by Robert Bopko (github.com/zeroznet) with Boba Bott (Claude Opus 5.5)
 
 set -eu
+# Debian 13 dash accepts pipefail, and the FreeBSD cron runs have used it all along.
+# shellcheck disable=SC3040
 set -o pipefail
 
 MANUAL_LIST="${HOME}/work/dropshit.txt"
