@@ -10,15 +10,17 @@ MANUAL_LIST="${MANUAL_LIST:-${HOME}/work/dropshit.txt}"
 EXT_IFACE4="ens3"
 EXT_IFACE6="ens5"
 
-DROP6_URL="https://www.spamhaus.org/drop/dropv6.txt"
-L1_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset"
-L2_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level2.netset"
-L3_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level3.netset"
-WS_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_webserver.netset"
-TOR_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/tor_exits.ipset"
-DM_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/dm_tor.ipset"
-CC_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/cybercrime.ipset"
-A1D_URL="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_abusers_1d.netset"
+FEEDS="
+https://www.spamhaus.org/drop/dropv6.txt
+https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset
+https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level2.netset
+https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level3.netset
+https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_webserver.netset
+https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/tor_exits.ipset
+https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/dm_tor.ipset
+https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/cybercrime.ipset
+https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_abusers_1d.netset
+"
 
 log()      { printf '%s\n' "$*"; }
 warn()     { printf 'WARN: %s\n' "$*" >&2; }
@@ -124,15 +126,12 @@ main() {
 
   log "Updating dropshit blocklists..."
 
-  download "$DROP6_URL" "$TMPDIR/drop6.txt"; sleep 1
-  download "$L1_URL"    "$TMPDIR/l1.txt";   sleep 1
-  download "$L2_URL"    "$TMPDIR/l2.txt";   sleep 1
-  download "$L3_URL"    "$TMPDIR/l3.txt";   sleep 1
-  download "$WS_URL"    "$TMPDIR/ws.txt";   sleep 1
-  download "$TOR_URL"   "$TMPDIR/tor.txt";  sleep 1
-  download "$DM_URL"    "$TMPDIR/dm.txt";   sleep 1
-  download "$CC_URL"    "$TMPDIR/cc.txt";   sleep 1
-  download "$A1D_URL"   "$TMPDIR/a1d.txt"
+  n=0
+  for url in $FEEDS; do
+    [ "$n" -eq 0 ] || sleep 1
+    n=$((n + 1))
+    download "$url" "$TMPDIR/feed$n.txt"
+  done
 
   cat "$TMPDIR"/*.txt > "$TMPDIR/combined.txt"
 

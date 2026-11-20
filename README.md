@@ -11,7 +11,7 @@ Downloads threat intelligence blocklists and loads them into the firewall drop t
 
 ## What it does
 
-- fetches 9 blocklists from Spamhaus and FireHol (Tor exits, DDoS networks, cybercrime, abusers, etc.)
+- fetches the Spamhaus and FireHol blocklists listed in `FEEDS` at the top of `dropshit.sh` (Tor exits, DDoS networks, cybercrime, abusers, etc.)
 - strips comments, deduplicates, and cleans entries
 - optionally merges a local manual blocklist (`~/work/dropshit.txt` by default)
 - updates the firewall atomically

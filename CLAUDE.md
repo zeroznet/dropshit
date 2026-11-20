@@ -15,7 +15,7 @@ Systems and mechanisms: README "Supported systems". Branch on `uname -s`. Touch 
 Inherits everything from `/home/zero/dev/CLAUDE.md`. Project-specific points:
 - One self-contained script, installed by copying it to `/usr/local/sbin/dropshit`. No sourced libraries, no config file.
 - A failed download aborts the run before the firewall changes. Both backends swap the table in one step (`nft -f` with create-then-delete, `pfctl -T replace`), so a failed load keeps the previous table.
-- The feed list lives in the `*_URL` variables at the top of `dropshit.sh`; keep the count in the README in sync.
+- The feed list lives in `FEEDS` at the top of `dropshit.sh`, one URL per line; the README points there instead of counting feeds.
 
 ## Repo
 
