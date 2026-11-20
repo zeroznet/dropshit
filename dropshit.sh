@@ -186,8 +186,10 @@ main() {
     FreeBSD)
       need_cmd pfctl
       cat "$TMPDIR/ipv4.txt" "$TMPDIR/ipv6.txt" > "$TMPDIR/clean.txt"
-      mv "$TMPDIR/clean.txt" /var/db/dropshit.txt || die "Failed to write /var/db/dropshit.txt"
-      pfctl -q -t dropshit -T replace -f /var/db/dropshit.txt || die "Failed to update pf table"
+      pfctl -q -t dropshit -T replace -f "$TMPDIR/clean.txt" || die "Failed to update pf table"
+      # pf.conf reloads this file, so it only changes after PF accepted the list, via a same-fs rename.
+      { cp "$TMPDIR/clean.txt" /var/db/dropshit.txt.new &&
+        mv /var/db/dropshit.txt.new /var/db/dropshit.txt; } || die "Failed to write /var/db/dropshit.txt"
       ;;
   esac
 
