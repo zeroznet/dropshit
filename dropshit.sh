@@ -7,8 +7,8 @@ set -eu
 set -o pipefail
 
 MANUAL_LIST="${MANUAL_LIST:-${HOME}/work/dropshit.txt}"
-EXT_IFACE4="ens3"
-EXT_IFACE6="ens5"
+EXT_IFACE4="${EXT_IFACE4:-ens3}"
+EXT_IFACE6="${EXT_IFACE6:-ens5}"
 
 FEEDS="
 https://www.spamhaus.org/drop/dropv6.txt
@@ -38,8 +38,11 @@ Supported systems:
   Linux   — loads a dedicated nftables table (inet dropshit) with drop rules
   FreeBSD — replaces the PF <dropshit> table via pfctl
 
-Optional manual blocklist: set MANUAL_LIST env var or edit the script top.
-Default: ${HOME}/work/dropshit.txt (silently skipped if missing)
+Environment:
+  MANUAL_LIST  local blocklist merged into the feeds
+               (default ${HOME}/work/dropshit.txt, skipped if missing)
+  EXT_IFACE4   Linux interface that drops IPv4 sources (default ens3)
+  EXT_IFACE6   Linux interface that drops IPv6 sources (default ens5)
 
 Cron example (hourly, as root):
   @hourly root dropshit.sh >/dev/null
@@ -174,6 +177,9 @@ main() {
   case "$OS" in
     Linux)
       need_cmd nft
+      for iface in "$EXT_IFACE4" "$EXT_IFACE6"; do
+        [ -e "/sys/class/net/$iface" ] || die "Interface not found: $iface (set EXT_IFACE4/EXT_IFACE6)"
+      done
       generate_nft_script "$TMPDIR/ipv4.txt" "$TMPDIR/ipv6.txt" "$TMPDIR/dropshit.nft"
       nft -f "$TMPDIR/dropshit.nft" || die "Failed to load nftables rules"
       ;;

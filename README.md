@@ -55,10 +55,22 @@ block drop in log quick on $ext_if from <dropshit>
 
 The script only updates the table data — PF rules stay in `pf.conf`.
 
-## Optional manual blocklist
+## Environment
 
-Set `MANUAL_LIST` in the script (or as an env var) to include custom entries.
-Default path: `~/work/dropshit.txt`. Silently skipped if the file does not exist.
+Set these in the cron line, not in the script: reinstalling overwrites the script.
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `MANUAL_LIST` | `~/work/dropshit.txt` | local blocklist merged into the feeds, skipped if missing |
+| `EXT_IFACE4` | `ens3` | Linux interface that drops IPv4 sources |
+| `EXT_IFACE6` | `ens5` | Linux interface that drops IPv6 sources |
+
+On Linux the script exits with an error if either interface does not exist.
+The interface match is required: FireHol level1 lists private and loopback ranges.
+
+```
+@hourly root EXT_IFACE4=eth0 EXT_IFACE6=eth0 /usr/local/sbin/dropshit >/dev/null
+```
 
 ## License
 
