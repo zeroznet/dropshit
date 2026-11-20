@@ -1,5 +1,12 @@
 # dropshit
 
+<p align="center">
+  <a href="https://github.com/zeroznet/dropshit/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/zeroznet/dropshit/ci.yml?branch=main&style=flat-square&label=ci&labelColor=000000" alt="CI"></a>
+  <a href="https://github.com/zeroznet/dropshit/commits/main"><img src="https://img.shields.io/github/last-commit/zeroznet/dropshit?style=flat-square&labelColor=000000&color=ff5fff" alt="Last Commit"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/zeroznet/dropshit?style=flat-square&labelColor=000000&color=875fff" alt="License"></a>
+  <img src="https://img.shields.io/badge/shell-POSIX%20sh-00ffff?style=flat-square&labelColor=000000" alt="POSIX sh">
+</p>
+
 Downloads threat intelligence blocklists and loads them into the firewall drop table.
 
 ## What it does
