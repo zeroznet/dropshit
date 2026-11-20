@@ -19,7 +19,7 @@ Branch on `uname -s`. Never touch firewall state outside what the table above li
 
 Inherits everything from `/home/zero/dev/CLAUDE.md`. Project-specific points:
 - One self-contained script, installed by copying it to `/usr/local/sbin/dropshit`. No sourced libraries, no config file.
-- A failed download aborts the run before the firewall changes. On Linux the table is deleted and reloaded, so a failed `nft -f` leaves the host without it until the next run.
+- A failed download aborts the run before the firewall changes. Both backends swap the table in one step (`nft -f` with create-then-delete, `pfctl -T replace`), so a failed load keeps the previous table.
 - The feed list lives in the `*_URL` variables at the top of `dropshit.sh`; keep the count in the README in sync.
 
 ## Repo

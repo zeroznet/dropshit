@@ -6,7 +6,7 @@ set -eu
 # shellcheck disable=SC3040
 set -o pipefail
 
-MANUAL_LIST="${HOME}/work/dropshit.txt"
+MANUAL_LIST="${MANUAL_LIST:-${HOME}/work/dropshit.txt}"
 EXT_IFACE4="ens3"
 EXT_IFACE6="ens5"
 
@@ -66,6 +66,8 @@ generate_nft_script() {
   ipv6_file="$2"
   out="$3"
   {
+    # Create-then-delete in the same file makes nft -f swap the table in one transaction.
+    printf 'table inet dropshit\ndelete table inet dropshit\n'
     printf 'table inet dropshit {\n'
 
     printf '  set blocklist4 {\n'
@@ -146,7 +148,6 @@ main() {
       grep '\.' "$TMPDIR/clean.txt" > "$TMPDIR/ipv4.txt" 2>/dev/null || true
       grep ':'  "$TMPDIR/clean.txt" > "$TMPDIR/ipv6.txt" 2>/dev/null || true
       generate_nft_script "$TMPDIR/ipv4.txt" "$TMPDIR/ipv6.txt" "$TMPDIR/dropshit.nft"
-      nft delete table inet dropshit 2>/dev/null || true
       nft -f "$TMPDIR/dropshit.nft" || die "Failed to load nftables rules"
       ;;
     FreeBSD)
