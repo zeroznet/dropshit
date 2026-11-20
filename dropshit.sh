@@ -30,7 +30,10 @@ need_cmd() { has_cmd "$1" || die "Missing required command: $1"; }
 
 usage() {
   cat <<EOF
-Usage: dropshit.sh [-h|--help]
+Usage: dropshit.sh [-h|--help] [--print]
+
+  --print  read raw entries from stdin and print the nft ruleset (Linux) or
+           pf list (FreeBSD) instead of downloading and loading it
 
 Downloads threat intelligence blocklists and loads them into the firewall.
 
@@ -140,8 +143,10 @@ cleanup() {
 }
 
 main() {
+  print=0
   case "${1:-}" in
     -h|--help) usage ;;
+    --print) print=1 ;;
     "") ;;
     *) die "Unknown argument: $1" ;;
   esac
@@ -155,19 +160,23 @@ main() {
   TMPDIR=$(mktemp -d)
   trap cleanup EXIT
 
-  log "Updating dropshit blocklists..."
+  if [ "$print" -eq 1 ]; then
+    cat > "$TMPDIR/combined.txt"
+  else
+    log "Updating dropshit blocklists..."
 
-  n=0
-  for url in $FEEDS; do
-    [ "$n" -eq 0 ] || sleep 1
-    n=$((n + 1))
-    download "$url" "$TMPDIR/feed$n.txt"
-  done
+    n=0
+    for url in $FEEDS; do
+      [ "$n" -eq 0 ] || sleep 1
+      n=$((n + 1))
+      download "$url" "$TMPDIR/feed$n.txt"
+    done
 
-  cat "$TMPDIR"/*.txt > "$TMPDIR/combined.txt"
+    cat "$TMPDIR"/*.txt > "$TMPDIR/combined.txt"
 
-  if [ -f "$MANUAL_LIST" ]; then
-    cat "$MANUAL_LIST" >> "$TMPDIR/combined.txt"
+    if [ -f "$MANUAL_LIST" ]; then
+      cat "$MANUAL_LIST" >> "$TMPDIR/combined.txt"
+    fi
   fi
 
   : > "$TMPDIR/ipv4.txt"
@@ -176,16 +185,24 @@ main() {
 
   case "$OS" in
     Linux)
+      generate_nft_script "$TMPDIR/ipv4.txt" "$TMPDIR/ipv6.txt" "$TMPDIR/dropshit.nft"
+      if [ "$print" -eq 1 ]; then
+        cat "$TMPDIR/dropshit.nft"
+        return
+      fi
       need_cmd nft
       for iface in "$EXT_IFACE4" "$EXT_IFACE6"; do
         [ -e "/sys/class/net/$iface" ] || die "Interface not found: $iface (set EXT_IFACE4/EXT_IFACE6)"
       done
-      generate_nft_script "$TMPDIR/ipv4.txt" "$TMPDIR/ipv6.txt" "$TMPDIR/dropshit.nft"
       nft -f "$TMPDIR/dropshit.nft" || die "Failed to load nftables rules"
       ;;
     FreeBSD)
-      need_cmd pfctl
       cat "$TMPDIR/ipv4.txt" "$TMPDIR/ipv6.txt" > "$TMPDIR/clean.txt"
+      if [ "$print" -eq 1 ]; then
+        cat "$TMPDIR/clean.txt"
+        return
+      fi
+      need_cmd pfctl
       pfctl -q -t dropshit -T replace -f "$TMPDIR/clean.txt" || die "Failed to update pf table"
       # pf.conf reloads this file, so it only changes after PF accepted the list, via a same-fs rename.
       { cp "$TMPDIR/clean.txt" /var/db/dropshit.txt.new &&

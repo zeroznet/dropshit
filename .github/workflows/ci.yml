@@ -24,11 +24,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Install dash and shellcheck
+      - name: Install dash, shellcheck and nftables
         run: |
           set -eu
           sudo apt-get update -q
-          sudo apt-get install -y -q dash shellcheck
+          sudo apt-get install -y -q dash nftables shellcheck
 
       - name: shellcheck
         run: shellcheck -s sh dropshit.sh
@@ -37,7 +37,14 @@ jobs:
       - name: Syntax
         run: dash -n dropshit.sh
 
-      # A full run rewrites the firewall, so only the arg path is exercised.
+      # A full run rewrites the firewall, so --print builds the ruleset from the fixture and nft -c only checks it.
+      - name: Ruleset check
+        run: |
+          set -eu
+          dash dropshit.sh --print < test/fixture.txt > dropshit.nft 2> warn.txt
+          grep -q 'not-an-address' warn.txt
+          sudo nft -c -f dropshit.nft
+
       - name: Help smoke run
         run: |
           set -eu

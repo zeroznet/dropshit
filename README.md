@@ -44,6 +44,10 @@ chmod +x /usr/local/sbin/dropshit
 @hourly root /usr/local/sbin/dropshit >/dev/null
 ```
 
+## Dry run
+
+`dropshit --print < list.txt` validates the entries in `list.txt` and prints the nftables ruleset (Linux) or PF list (FreeBSD) without downloading or touching the firewall.
+
 ## FreeBSD prerequisite
 
 Your `pf.conf` must define the table and drop rule before running the script:

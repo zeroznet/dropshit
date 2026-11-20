@@ -1,0 +1,6 @@
+# fixture for the CI --print run: comments, CIDRs, both families, one invalid entry
+192.0.2.1
+198.51.100.0/24 ; SBL0
+2001:db8::/32
+::ffff:203.0.113.7
+not-an-address

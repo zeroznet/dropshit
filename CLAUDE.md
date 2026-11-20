@@ -19,4 +19,4 @@ Inherits everything from `/home/zero/dev/CLAUDE.md`. Project-specific points:
 
 ## Repo
 
-Public at https://github.com/zeroznet/dropshit, BSD-2-Clause. CI (`.github/workflows/ci.yml`) runs shellcheck, a dash parse, and a `--help` / unknown-flag smoke run; it never touches a firewall.
+Public at https://github.com/zeroznet/dropshit, BSD-2-Clause. CI (`.github/workflows/ci.yml`) runs shellcheck, a dash parse, a `--print` run on `test/fixture.txt` checked with `nft -c`, and a `--help` / unknown-flag smoke run; it never loads a firewall.
